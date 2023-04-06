@@ -15,7 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/members")
+    fetch("/api/members")
       .then((response) => response.json())
       .then((members) => setMembers(members))
       .finally(() => {
@@ -26,7 +26,7 @@ export default function Home() {
   function submitSave(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
-    fetch("http://localhost:3000/api/members", {
+    fetch("/api/members", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, location, github }),
@@ -41,6 +41,17 @@ export default function Home() {
       .finally(() => {
         setLoading(false);
       });
+  }
+
+  function remove(id: string) {
+    setLoading(true);
+    fetch("/api/members", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).finally(() => {
+      setLoading(false);
+    });
   }
 
   return (
@@ -116,13 +127,22 @@ export default function Home() {
                   className="relative flex items-start justify-between border border-gray-100 p-4 shadow-lg sm:p-6 lg:p-8"
                   key={member.id}
                 >
-                  <div>
+                  <div className="w-full">
                     <h3 className="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
                       {member.name}
                     </h3>
                     <p className="mt-2 hidden text-sm sm:block">
                       {member.location}, {member.github}
                     </p>
+                    <div className="w-full flex justify-end text-xs">
+                      <button
+                        className="px-3 py-2 bg-black text-white disabled:bg-gray-500"
+                        onClick={(e) => remove(member.id)}
+                        disabled={loading}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}

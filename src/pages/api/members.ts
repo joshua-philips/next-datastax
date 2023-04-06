@@ -29,6 +29,14 @@ export default async function handler(
     return;
   }
 
+  if (req.method === "DELETE") {
+    const { body } = req;
+    const id = body.id;
+
+    const data = await membersCollection.delete(id);
+    res.status(200);
+  }
+
   const { data, status } = await membersCollection.find({});
   res
     .status(status)
