@@ -43,15 +43,18 @@ export default function Home() {
       });
   }
 
-  function remove(id: string) {
+  function remove(id: string, name: string) {
     setLoading(true);
-    fetch("/api/members", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    }).finally(() => {
-      setLoading(false);
-    });
+    const allowed = confirm(`Delete ${name}`);
+    if (allowed) {
+      fetch("/api/members", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      }).finally(() => {
+        setLoading(false);
+      });
+    }
   }
 
   return (
@@ -84,7 +87,7 @@ export default function Home() {
         </div>
         <div className={`pt-16`}>
           <div>
-            <h1 className="py-5">Add new user</h1>
+            <h1 className="py-5">Add new member</h1>
             <form
               onSubmit={(e) => submitSave(e)}
               className="grid md:flex gap-5"
@@ -115,37 +118,41 @@ export default function Home() {
                 onChange={(e) => setGithub(e.target.value)}
               />
               <input
-                className="px-3 py-2 bg-black text-white"
+                className="px-3 py-2 bg-black cursor-pointer hover:bg-gray-500 disabled:bg-gray-500 text-white"
                 disabled={loading}
                 type="submit"
                 value="Submit"
               />
             </form>
             <ul className="mt-10 grid lg:grid-cols-2 gap-5">
-              {members.map((member: any) => (
-                <li
-                  className="relative flex items-start justify-between border border-gray-100 p-4 shadow-lg sm:p-6 lg:p-8"
-                  key={member.id}
-                >
-                  <div className="w-full">
-                    <h3 className="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
-                      {member.name}
-                    </h3>
-                    <p className="mt-2 hidden text-sm sm:block">
-                      {member.location}, {member.github}
-                    </p>
-                    <div className="w-full flex justify-end text-xs">
-                      <button
-                        className="px-3 py-2 bg-black text-white disabled:bg-gray-500"
-                        onClick={(e) => remove(member.id)}
-                        disabled={loading}
-                      >
-                        Delete
-                      </button>
+              {members.length > 0 ? (
+                members.map((member: any) => (
+                  <li
+                    className="relative flex items-start justify-between border border-gray-100 p-4 shadow-lg sm:p-6 lg:p-8"
+                    key={member.id}
+                  >
+                    <div className="w-full">
+                      <h3 className="mt-4 text-lg font-bold text-gray-900 sm:text-xl">
+                        {member.name}
+                      </h3>
+                      <p className="mt-2 hidden text-sm sm:block">
+                        {member.location}, {member.github}
+                      </p>
+                      <div className="w-full flex justify-end text-xs">
+                        <button
+                          className="px-3 py-2 bg-black text-white disabled:bg-gray-500 hover:bg-gray-500"
+                          onClick={(e) => remove(member.id, member.name)}
+                          disabled={loading}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                ))
+              ) : (
+                <div>No members</div>
+              )}
             </ul>
           </div>
         </div>
